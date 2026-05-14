@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>22-Day Semester Break Mastery</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #00ff88;
+            --accent: #00b4d8;
+            --phitron: #ff0055;
+            --text-main: #ffffff;
+            --text-muted: #a0aec0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem; /* Reduced for mobile */
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s ease;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem); /* Responsive font size */
+            background: -webkit-linear-gradient(var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping on small screens */
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            animation: fadeIn 1.2s ease;
+        }
+
+        select {
+            background: var(--glass-bg);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            min-width: 140px;
+            max-width: 200px;
+        }
+
+        select option {
+            background: #203a43;
+            color: white;
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .routine-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            animation: slideInUp 0.5s ease backwards;
+            gap: 1rem;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .task-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            flex: 1;
+        }
+
+        .task-time {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .task-name {
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        /* Priority Styling */
+        .priority-phitron {
+            border: 1px solid var(--phitron);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .priority-phitron::before {
+            content: "🔥 TOP PRIORITY";
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--phitron);
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-bottom-left-radius: 8px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Custom Checkbox */
+        .checkbox-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked::after {
+            content: '✔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .task-card.completed {
+            opacity: 0.5;
+            background: rgba(0, 255, 136, 0.03);
+        }
+
+        .task-card.completed .task-name {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Notes Section */
+        .notes-section {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease;
+        }
+
+        .notes-section h2 {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .notes-area {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 1rem;
+            font-size: 1rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .notes-area:focus {
+            border-color: var(--primary);
+        }
+
+        .notes-area::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .save-indicator {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-top: 0.5rem;
+            text-align: right;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Modal / Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            padding: 2.5rem;
+            border-radius: 15px;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .modal-message {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .btn-close {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        .btn-close:hover {
+            background: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: fall 2s ease-in forwards;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 480px) {
+            .priority-phitron::before {
+                font-size: 0.5rem;
+                padding: 2px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>22-Day Routine Hub</h1>
+        <p>May 14 - June 4 • Dedication > Motivation</p>
+    </header>
+
+    <div class="controls">
+        <select id="daySelector" onchange="loadDay()">
+            <!-- Options populated by JS -->
+        </select>
+        <select id="weekSelector" disabled>
+            <option>Week 1: Math Focus</option>
+            <option>Week 2: Data Structure Focus</option>
+            <option>Week 3: Database Focus</option>
+        </select>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="routine-container" id="routineContainer">
+            <!-- Tasks populated by JS -->
+        </div>
+
+        <div class="notes-section">
+            <h2>📝 Daily Notes & Reflections</h2>
+            <textarea id="dailyNotes" class="notes-area" placeholder="What should I do today? Any specific focus areas? Express your thoughts here..."></textarea>
+            <div class="save-indicator" id="saveIndicator">Saved automatically ✓</div>
+        </div>
+    </div>
+
+    <!-- Motivational Popup Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Awesome!</h2>
+            <p class="modal-message" id="modalMessage">Keep up the great work.</p>
+            <button class="btn-close" onclick="closeModal()">Keep Going</button>
+        </div>
+    </div>
+
+    <script>
+        // Motivational Quotes Bank
+        const taskMotivations = [
+            "Outstanding move, Shahriar! One step closer.",
+            "Task crushed! Your future self is thanking you.",
+            "Discipline equals freedom. Keep executing.",
+            "That's how you build a solid foundation!",
+            "Excellent work. Now onto the next target."
+        ];
+
+        const dayMotivations = [
+            "Day Complete! Checkmate against procrastination today.",
+            "Incredible focus! You are laying the groundwork for your cybersecurity goals.",
+            "Another day conquered. Rest up, you've earned it."
+        ];
+
+        const weekMotivations = [
+            "Week 1 Down! Your Math foundation is getting solid. Momentum is building!",
+            "Week 2 Down! Data Structures tamed. Consistency is your superpower right now.",
+            "Week 3 Mastery! Database skills locked in. You have totally transformed your routine."
+        ];
+
+        // State Management
+        let currentDay = 1;
+        let progressData = JSON.parse(localStorage.getItem('routineProgress')) || {};
+        let notesData = JSON.parse(localStorage.getItem('routineNotes')) || {};
+        let saveTimeout;
+
+        // Determine Academic Subject based on the day
+        function getAcademicSubject(day) {
+            if (day <= 7) return "Math";
+            if (day <= 14) return "Data Structure";
+            return "Database";
+        }
+
+        // Generate Routine dynamically so academic subjects change by week
+        function getRoutineForDay(day) {
+            const academicSubject = getAcademicSubject(day);
+            return [
+                { id: 1, time: "06:30 AM", name: "Wake Up & Hydrate", type: "normal" },
+                { id: 2, time: "06:45 AM - 07:30 AM", name: "Morning Exercise", type: "health" },
+                { id: 3, time: "07:30 AM - 08:30 AM", name: "Breakfast & Freshen Up", type: "normal" },
+                { id: 4, time: "08:30 AM - 11:30 AM", name: "Phitron Course - Deep Work", type: "phitron" },
+                { id: 5, time: "11:30 AM - 12:00 PM", name: "Short Break / Stretch", type: "normal" },
+                { id: 6, time: "12:00 PM - 02:00 PM", name: "Web Development Course", type: "learning" },
+                { id: 7, time: "02:00 PM - 03:30 PM", name: "Lunch & Rest", type: "normal" },
+                { id: 8, time: "03:30 PM - 05:30 PM", name: `Academic Focus: ${academicSubject}`, type: "academic" },
+                { id: 9, time: "05:30 PM - 06:30 PM", name: "Free Time: Walk / Chess match / Relax", type: "leisure" },
+                { id: 10, time: "06:30 PM - 08:00 PM", name: `Academic Review (${academicSubject}) or Phitron`, type: "academic" },
+                { id: 11, time: "08:00 PM - 09:00 PM", name: "Dinner", type: "normal" },
+                { id: 12, time: "09:00 PM - 10:30 PM", name: "Free Time: Read Book / Movie", type: "leisure" },
+                { id: 13, time: "10:30 PM - 11:30 PM", name: "Wind Down (No heavy screens)", type: "normal" },
+                { id: 14, time: "11:30 PM", name: "Sleep (Aim for 7 hours)", type: "normal" }
+            ];
+        }
+
+        // Initialize App
+        function init() {
+            const daySelector = document.getElementById('daySelector');
+            for (let i = 1; i <= 22; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Day ${i}`;
+                daySelector.appendChild(option);
+            }
+
+            // Setup Notes Autosave
+            const notesArea = document.getElementById('dailyNotes');
+            notesArea.addEventListener('input', () => {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(saveNotes, 1000); // Save 1 second after typing stops
+            });
+
+            loadDay();
+        }
+
+        // Load specific day
+        function loadDay() {
+            currentDay = parseInt(document.getElementById('daySelector').value);
+            
+            // Update week selector visually based on the day
+            const weekSelector = document.getElementById('weekSelector');
+            if(currentDay <= 7) weekSelector.selectedIndex = 0;
+            else if(currentDay <= 14) weekSelector.selectedIndex = 1;
+            else weekSelector.selectedIndex = 2;
+
+            // Load notes for this day
+            const notesArea = document.getElementById('dailyNotes');
+            notesArea.value = notesData[currentDay] || '';
+            document.getElementById('saveIndicator').style.opacity = '0';
+
+            renderTasks();
+            updateProgressBar();
+        }
+
+        // Save Notes manually/automatically
+        function saveNotes() {
+            const notes = document.getElementById('dailyNotes').value;
+            notesData[currentDay] = notes;
+            localStorage.setItem('routineNotes', JSON.stringify(notesData));
+            
+            const indicator = document.getElementById('saveIndicator');
+            indicator.style.opacity = '1';
+            setTimeout(() => { indicator.style.opacity = '0'; }, 2000);
+        }
+
+        // Render Tasks to DOM
+        function renderTasks() {
+            const container = document.getElementById('routineContainer');
+            container.innerHTML = '';
+
+            if (!progressData[currentDay]) {
+                progressData[currentDay] = {};
+            }
+
+            const currentRoutine = getRoutineForDay(currentDay);
+
+            currentRoutine.forEach((task, index) => {
+                const isCompleted = progressData[currentDay][task.id];
+                
+                const card = document.createElement('div');
+                card.className = `task-card ${task.type === 'phitron' ? 'priority-phitron' : ''} ${isCompleted ? 'completed' : ''}`;
+                card.style.animationDelay = `${index * 0.03}s`;
+
+                card.innerHTML = `
+                    <div class="task-info">
+                        <span class="task-time">${task.time}</span>
+                        <span class="task-name">${task.name}</span>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" onchange="toggleTask(${task.id}, this)" ${isCompleted ? 'checked' : ''}>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Handle Task Toggle
+        function toggleTask(taskId, checkboxElement) {
+            const card = checkboxElement.closest('.task-card');
+            const isChecked = checkboxElement.checked;
+            
+            progressData[currentDay][taskId] = isChecked;
+            localStorage.setItem('routineProgress', JSON.stringify(progressData));
+
+            if (isChecked) {
+                card.classList.add('completed');
+                createConfetti();
+                checkMilestones();
+            } else {
+                card.classList.remove('completed');
+            }
+            
+            updateProgressBar();
+        }
+
+        // Update top progress bar
+        function updateProgressBar() {
+            const currentRoutine = getRoutineForDay(currentDay);
+            const completedToday = Object.values(progressData[currentDay]).filter(Boolean).length;
+            const percentage = (completedToday / currentRoutine.length) * 100;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        // Check if Task, Day, or Week is completed
+        function checkMilestones() {
+            const currentRoutine = getRoutineForDay(currentDay);
+            const completedToday = Object.values(progressData[currentDay]).filter(Boolean).length;
+            
+            if (completedToday === currentRoutine.length) {
+                // Day completed
+                if (currentDay % 7 === 0) {
+                    // Week completed (Days 7, 14, 21)
+                    showModal("Week Conquered!", weekMotivations[(currentDay/7) - 1]);
+                } else if (currentDay === 22) {
+                    showModal("Break Mastery Complete!", "You have successfully dominated your 22-day break. Incredible dedication!");
+                } else {
+                    showModal("Day Complete!", getRandom(dayMotivations));
+                }
+            } else {
+                // Just a normal task completed
+                showModal("Task Done!", getRandom(taskMotivations));
+            }
+        }
+
+        // Modal Logic
+        function showModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function getRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Simple Confetti Animation
+        function createConfetti() {
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = Math.random() > 0.5 ? '#00ff88' : '#00b4d8';
+                confetti.style.animationDuration = (Math.random() * 1 + 1) + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => { confetti.remove(); }, 2000);
+            }
+        }
+
+        // Start
+        window.onload = init;
+    </script>
+</body>
+</html>
